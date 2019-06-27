@@ -24,13 +24,17 @@ $(function () {
 
         $.post(actionUrl, dataToSend).done(function (data) {
             placeholderElement.find('.modal').modal('hide');
-            RefreshSingerList();
+            RefreshSingerList(data.id);
         });
     });
 
-    function RefreshSingerList() {
+    $(document).ready(function () {
+        RefreshSingerList();
+    });
+
+    function RefreshSingerList(selectedID) {
         actUrl = "/Soundtracks/GetSingerList";
-        alert("here!");
+        alert(selectedID);
         $.ajax({
             data: {},
             type: 'POST',
@@ -38,11 +42,14 @@ $(function () {
             dataType: 'json',
             url: actUrl,
             success: function (result) {
-                $("#dropDownSingerId").empty();
+                $("#SingerId").empty();
                 $.each(result, function (i, item) {
-                    $("#dropDownSingerId").append('<option value="' + item.Value + '">' +
-                        item.Text + '</option>');
+                    $("#SingerId").append('<option value="' + item.value + '">' +
+                        item.text + '</option>');
                 });
+                if (selectedID) {
+                    $("#SingerId").selectedIndex = selectedID;
+                }
             },
             error: function (ex) {
                 alert('We have some technical difficulties...');
