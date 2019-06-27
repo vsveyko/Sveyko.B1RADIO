@@ -34,8 +34,8 @@ namespace Sveyko.B1RADIO
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            var connection = @"Server=localhost\SQLEXPRESS;Database=B1RADIO;Trusted_Connection=True;ConnectRetryCount=0";
+            //\SQLEXPRESS
+            var connection = @"Server=localhost;Database=B1RADIO;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<B1RADIOContext>(options => options.UseSqlServer(connection));
         }
 

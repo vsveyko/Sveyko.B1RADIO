@@ -18,7 +18,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="SingerId" class="control-label"></label>
-                <select asp-for="SingerId" class ="form-control" asp-items="ViewBag.SingerId"></select>
+                <div class="form-group">
+                    @*<select  id="dropDownSingerId" asp-for="SingerId" class="form-control" asp-items="ViewBag.SingerId"></select>*@
+                    <select id="dropDownSingerId" class="form-control"></select>
+                    <div id="modal-placeholder"></div>
+                    <button type="button" class="btn btn-primary" data-toggle="ajax-modal" data-target="#add-singer">
+                        New
+                    </button>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
