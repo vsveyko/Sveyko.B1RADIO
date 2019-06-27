@@ -168,5 +168,29 @@ namespace Sveyko.B1RADIO.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult AddSinger()
+        {
+            var model = new Singer();
+
+            return PartialView("_AddSingerPartial", model);
+        }
+
+        [HttpPost]
+        public IActionResult AddSinger(Singer model)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(model);
+                _context.SaveChanges();
+            }
+            return PartialView("_AddSingerPartial", model);
+        }
+
+        [HttpPost]
+        public JsonResult GetSingerList()
+        {
+            return Json(new SelectList(_context.Singer, "Id", "Name"));
+        }
     }
 }
