@@ -1,53 +1,223 @@
-﻿@model IEnumerable<Sveyko.B1RADIO.Models.Soundtrack>
+﻿@using Sveyko.B1RADIO.Utils;
+@model PaginatedList<Sveyko.B1RADIO.Models.Soundtrack>
+<div id="target">
+    @{
+        ViewData["Title"] = "Soundtracks";
+    }
 
-@{
-    ViewData["Title"] = "Index";
-}
+    <h2>R1.RADIO: Soundtrack list</h2>
+    <div class="row top-buffer">
+        <div class="col-2 col-sm-2 col-xs-12">
+            @*<p>
+                    <a asp-action="Create">Add New</a>
+                </p>*@
+            <input type="button" class="btn btn-success" value="Create new" onclick="location.href='@Url.Action("Create", "Soundtracks")'" />
+        </div>
+        @*<div class="col-4 col-sm-4 col-xs-12">
+            </div>*@
+        <div class="col-2 col-sm-2 col-xs-12 col-offset-3 col-sm-offset-3">
+            <select id="searchTypeID" name="searchTypeID" class="form-control">
+                <option>Choose filter field..</option>
+                <option>Genre</option>
+                <option>Singer</option>
+                <option>Title</option>
+            </select>
+        </div>
+        <div class="col-4 col-sm-4 col-xs-12">
+            <div class="input-group">
 
-<h2>Index</h2>
+                <input id="searchString" type="search" class="form-control">
+                <span class="input-group-btn">
+                    <button id="searchGo" class="btn btn-primary" type="button">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true">
+                        </span>
+                        Search
+                    </button>
+                </span>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Filepath)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Genre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Singer)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Filepath)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Genre.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Singer.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            </div>
+        </div>
+        <div class="col-1 col-sm-1 col-xs-12">
+            <button id="resetSearch" class="btn btn-default" type="button">
+                Show all
+            </button>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <span id="headerGenre">
+                        @Html.DisplayNameFor(model => model[0].Genre)
+                    </span>
+                </th>
+                <th>
+                    <span id="headerSinger">
+                        @Html.DisplayNameFor(model => model[0].Singer)
+                    </span>
+                </th>
+                <th>
+                    <span id="headerTitle">
+                        @Html.DisplayNameFor(model => model[0].Title)
+                    </span>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].ServerFilename)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].ClientFilename)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Genre.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Singer.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ServerFilename)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientFilename)
+                    </td>
+                    <td>
+                        <a href="#" id="play @item.Id" sound="@item.ServerFilename" class="play-Audio">Play</a> |
+                        <a href="#" id="pause @item.Id" sound="@item.ServerFilename" class="pause-Audio">Stop</a>
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <audio id="audio">
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSortOrder"]"
+       asp-route-pageIndex="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSortOrder"]"
+       asp-route-pageIndex="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
+</div>
+        @section Scripts {
+
+            <script>
+                var soundtrackSortOrder = "@ViewData["CurrentSortOrder"]",                    
+                    soundtrackSearchTypeID = 0,
+                    soundtrackSearchString = "",
+                    soundtrackFolder = "/soundtracks/";
+
+                
+
+                var elGenreHeader = document.getElementById("headerGenre");
+                elGenreHeader.onclick = setSortOrderForGenre;
+
+                var elSingerHeader = document.getElementById("headerSinger");
+                elSingerHeader.onclick = setSortOrderForSinger;
+
+                var elTitleHeader = document.getElementById("headerTitle");
+                elTitleHeader.onclick = setSortOrderForTitle;
+
+                var elSearchGo = document.getElementById("searchGo");
+                elSearchGo.onclick = setSearchClause;
+
+                var elResetSearch = document.getElementById("resetSearch");
+                elResetSearch.onclick = resetSearchClause;
+
+                function setSortOrderFor(headerKey) {
+                    alert(headerKey + " " + soundtrackSortOrder);
+                    soundtrackSortOrder = soundtrackSortOrder === headerKey + "_asc" ? headerKey + "_desc" : headerKey + "_asc";
+                    alert("after: " + soundtrackSortOrder);
+                    reloadDataSet(soundtrackSortOrder, soundtrackSearchTypeID, soundtrackSearchString);
+                }
+
+                function setSortOrderForGenre() {
+                    var headerKey = "genre";
+                    setSortOrderFor(headerKey)
+                }
+
+                function setSortOrderForTitle() {
+                    var headerKey = "title";
+                    setSortOrderFor(headerKey)
+                }
+
+                function setSortOrderForSinger() {
+                    var headerKey = "singer";
+                    setSortOrderFor(headerKey)
+                }
+
+                function setSearchClause() {
+                    soundtrackSearchTypeID = document.getElementById("searchTypeID").selectedIndex;
+                    soundtrackSearchString = document.getElementById("searchString").value;
+                    reloadDataSet(soundtrackSortOrder, soundtrackSearchTypeID, soundtrackSearchString);
+                }
+
+                function resetSearchClause() {
+                    soundtrackSearchTypeID = 0;
+                    soundtrackSearchString = "";
+                    reloadDataSet(soundtrackSortOrder, soundtrackSearchTypeID, soundtrackSearchString);
+                }
+
+
+                function reloadDataSet(sortOrder, searchTypeID, searchString) {
+                   // alert("reloadDataSet");
+                    var actionUrl = '/Soundtracks/Index';
+                    var dataToSend = { "sortOrder": sortOrder, "searchTypeID": searchTypeID, "searchString": searchString };
+
+                    $.get(actionUrl, dataToSend).done(function (data) {
+                       // alert("dataset reloaded")
+                        $("#target").html(data)
+                    });
+                }
+
+                $(".play-Audio").on('click', function (event) {
+                    document.getElementById("audio").src = soundtrackFolder + $(this).attr("sound");
+                    document.getElementById("audio").play();
+                });
+
+                $(".pause-Audio").on('click', function (event) {
+                    document.getElementById("audio").src = soundtrackFolder + $(this).attr("sound");
+                    document.getElementById("audio").pause();
+                });
+
+                $(function () {
+
+                    $(document).ready(function () {
+                        //RefreshSingerList();
+                        
+                    });
+
+                });
+            </script>
+
+        }

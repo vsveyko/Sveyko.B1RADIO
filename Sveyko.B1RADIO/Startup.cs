@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sveyko.B1RADIO.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace Sveyko.B1RADIO
 {
@@ -33,10 +35,15 @@ namespace Sveyko.B1RADIO
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //\SQLEXPRESS
-            var connection = @"Server=localhost;Database=B1RADIO;Trusted_Connection=True;ConnectRetryCount=0";
+            var connection = @"Server=localhost\SQLEXPRESS;Database=B1RADIO;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<B1RADIOContext>(options => options.UseSqlServer(connection));
+
+            var fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(fileRoot));
+
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
