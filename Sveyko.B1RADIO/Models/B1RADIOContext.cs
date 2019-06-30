@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -6,6 +7,7 @@ namespace Sveyko.B1RADIO.Models
 {
     public partial class B1RADIOContext : DbContext
     {
+
         public B1RADIOContext()
         {
         }
@@ -34,6 +36,10 @@ namespace Sveyko.B1RADIO.Models
             {
                 entity.ToTable("GENRE");
 
+                entity.HasIndex(e => e.Name)
+                    .HasName("UQ_GENRE_NAME")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Name)
@@ -45,6 +51,10 @@ namespace Sveyko.B1RADIO.Models
             modelBuilder.Entity<Singer>(entity =>
             {
                 entity.ToTable("SINGER");
+
+                entity.HasIndex(e => e.Name)
+                    .HasName("UQ_SINGER_NAME")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
@@ -58,19 +68,33 @@ namespace Sveyko.B1RADIO.Models
             {
                 entity.ToTable("SOUNDTRACK");
 
+                entity.HasIndex(e => e.ServerFilename)
+                    .HasName("UQ_SOUNDTRACK_SRVFILENAME")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.SingerId, e.Title })
+                    .HasName("UQ_SOUNDTRACK_SINGERTITLE")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.Filepath)
+                entity.Property(e => e.ClientFilename)
                     .IsRequired()
-                    .HasColumnName("FILEPATH");
+                    .HasColumnName("CLIENT_FILENAME");
 
                 entity.Property(e => e.GenreId).HasColumnName("GENRE_ID");
+
+                entity.Property(e => e.ServerFilename)
+                    .IsRequired()
+                    .HasColumnName("SERVER_FILENAME")
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.SingerId).HasColumnName("SINGER_ID");
 
                 entity.Property(e => e.Title)
                     .IsRequired()
-                    .HasColumnName("TITLE");
+                    .HasColumnName("TITLE")
+                    .HasMaxLength(150);
 
                 entity.HasOne(d => d.Genre)
                     .WithMany(p => p.Soundtrack)

@@ -17,10 +17,10 @@
             @Html.DisplayFor(model => model.Title)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Filepath)
+            @Html.DisplayNameFor(model => model.ClientFilename)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Filepath)
+            @Html.DisplayFor(model => model.ClientFilename)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Genre)
@@ -35,8 +35,52 @@
             @Html.DisplayFor(model => model.Singer.Name)
         </dd>
     </dl>
+    @{
+        string fileName = "/soundtracks/" + @Model.ServerFilename;
+    }
+    @if (!string.IsNullOrEmpty(fileName))
+    {
+        <audio controls>
+            <source src="@fileName" type="audio/mpeg">
+        </audio>
+
+        <a href="#" id="playAudio">Play Audio</a>
+        <a href="#" id="pauseAudio">Pause Audio</a>
+        <audio id="audio">
+            <source src="@fileName" type="audio/mpeg">
+            Your browser doesn't support the audio element.
+        </audio>
+        <button class="btn btn-default" id="btnPlayID">
+            <span class="glyphicon glyphicon-log-in">
+            </span> Test
+        </button>
+
+    }
+
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+    var el = document.getElementById("playAudio");
+    el.onclick = playAudio;
+    var elPause = document.getElementById("pauseAudio");
+    elPause.onclick = pauseAudio;
+    function playAudio() {
+        document.getElementById("audio").play();
+    }
+    function pauseAudio() {
+        document.getElementById("audio").pause();
+    }
+    var el2 = document.getElementById("btnPlayID");
+    el2.onclick = test;
+    function test() {
+        //playAudio();
+        el2.find('span:first').toggleClass('glyphicon-log-in glyphicon-log-out');
+       // var color = clicked ? 'red' : 'blue';
+        //$(this).css('background-color', color);
+        clicked = !clicked;
+    };
+</script>

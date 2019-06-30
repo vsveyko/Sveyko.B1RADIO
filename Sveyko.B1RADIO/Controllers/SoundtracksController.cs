@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sveyko.B1RADIO.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Sveyko.B1RADIO.Utils;
 
 namespace Sveyko.B1RADIO.Controllers
 {
@@ -14,16 +17,76 @@ namespace Sveyko.B1RADIO.Controllers
     {
         private readonly B1RADIOContext _context;
 
+        private string TmpFileDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/soundtracks/temp");
+        private string WorkFileDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/soundtracks");
+
         public SoundtracksController(B1RADIOContext context)
         {
             _context = context;
         }
 
         // GET: Soundtracks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, int searchTypeID, string searchString, string currentFilter, int? pageIndex)
         {
             var b1RADIOContext = _context.Soundtrack.Include(s => s.Genre).Include(s => s.Singer);
-            return View(await b1RADIOContext.ToListAsync());
+
+            ViewData["CurrentSortOrder"] = String.IsNullOrEmpty(sortOrder) ? "genre_asc" : sortOrder;
+            ViewData["CurrentFilter"] = searchString;
+
+            if (searchString != null)
+            {
+                pageIndex = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            IQueryable<Soundtrack> soundtracks = from s in b1RADIOContext
+                                                select s;
+
+            if ((searchTypeID > 0) && (!String.IsNullOrEmpty(searchString)))
+            {
+                switch (searchTypeID)
+                {
+                    case 1:
+                        soundtracks = soundtracks.Where(s => s.Genre.Name.Contains(searchString));
+                        break;
+                    case 2:
+                        soundtracks = soundtracks.Where(s => s.Singer.Name.Contains(searchString));
+                        break;
+                    case 3:
+                        soundtracks = soundtracks.Where(s => s.Title.Contains(searchString));
+                        break;
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "genre_desc":
+                    soundtracks = soundtracks.OrderByDescending(s => s.Genre.Name);
+                    break;
+                case "singer_asc":
+                    soundtracks = soundtracks.OrderBy(s => s.Singer.Name);
+                    break;
+                case "singer_desc":
+                    soundtracks = soundtracks.OrderByDescending(s => s.Singer.Name);
+                    break;
+                case "title_asc":
+                    soundtracks = soundtracks.OrderBy(s => s.Title);
+                    break;
+                case "title_desc":
+                    soundtracks = soundtracks.OrderByDescending(s => s.Title);
+                    break;
+                default:
+                    soundtracks = soundtracks.OrderBy(s => s.Genre.Name);
+                    break;
+            }
+
+            int pageSize = 10;
+            var soundtrackList = await PaginatedList<Soundtrack>.CreateAsync(soundtracks.AsNoTracking(), pageIndex ?? 1, pageSize);
+            //var soundtrackList = await soundtracks.AsNoTracking().ToListAsync();
+            return View(soundtrackList);
         }
 
         // GET: Soundtracks/Details/5
@@ -49,8 +112,8 @@ namespace Sveyko.B1RADIO.Controllers
         // GET: Soundtracks/Create
         public IActionResult Create()
         {
-            ViewData["GenreId"] = new SelectList(_context.Genre, "Id", "Name");
-            ViewData["SingerId"] = new SelectList(_context.Singer, "Id", "Name");
+            ViewData["GenreId"] = new SelectList(_context.Genre.OrderBy(e => e.Name), "Id", "Name");
+            ViewData["SingerId"] = new SelectList(_context.Singer.OrderBy(e => e.Name), "Id", "Name");
             return View();
         }
 
@@ -59,16 +122,18 @@ namespace Sveyko.B1RADIO.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,GenreId,SingerId,Title,Filepath")] Soundtrack soundtrack)
+        public async Task<IActionResult> Create([Bind("Id, GenreId, SingerId, Title, ServerFilename, ClientFilename")] Soundtrack soundtrack)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(soundtrack);
+                System.IO.File.Move(Path.Combine(TmpFileDir, soundtrack.ServerFilename), Path.Combine(WorkFileDir, soundtrack.ServerFilename));
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GenreId"] = new SelectList(_context.Genre, "Id", "Name", soundtrack.GenreId);
-            ViewData["SingerId"] = new SelectList(_context.Singer, "Id", "Name", soundtrack.SingerId);
+            ViewData["GenreId"] = new SelectList(_context.Genre.OrderBy(e => e.Name), "Id", "Name", soundtrack.GenreId);
+            ViewData["SingerId"] = new SelectList(_context.Singer.OrderBy(e => e.Name), "Id", "Name", soundtrack.SingerId);
+            
             return View(soundtrack);
         }
 
@@ -85,8 +150,8 @@ namespace Sveyko.B1RADIO.Controllers
             {
                 return NotFound();
             }
-            ViewData["GenreId"] = new SelectList(_context.Genre, "Id", "Name", soundtrack.GenreId);
-            ViewData["SingerId"] = new SelectList(_context.Singer, "Id", "Name", soundtrack.SingerId);
+            ViewData["GenreId"] = new SelectList(_context.Genre.OrderBy(e => e.Name), "Id", "Name", soundtrack.GenreId);
+            ViewData["SingerId"] = new SelectList(_context.Singer.OrderBy(e => e.Name), "Id", "Name", soundtrack.SingerId);
             return View(soundtrack);
         }
 
@@ -95,7 +160,7 @@ namespace Sveyko.B1RADIO.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GenreId,SingerId,Title,Filepath")] Soundtrack soundtrack)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, GenreId, SingerId, Title, ServerFilename, ClientFilename")] Soundtrack soundtrack)
         {
             if (id != soundtrack.Id)
             {
@@ -104,9 +169,18 @@ namespace Sveyko.B1RADIO.Controllers
 
             if (ModelState.IsValid)
             {
+                Soundtrack existingSoundtrack = _context.Soundtrack.FirstOrDefault(e => e.Id == soundtrack.Id);
                 try
                 {
+                    _context.Entry<Soundtrack>(existingSoundtrack).State = EntityState.Detached;
                     _context.Update(soundtrack);
+                    if (System.IO.File.Exists(Path.Combine(TmpFileDir, soundtrack.ServerFilename)))
+                    {
+                        if (existingSoundtrack != null)
+                            System.IO.File.Delete(Path.Combine(WorkFileDir, existingSoundtrack.ServerFilename));
+                        System.IO.File.Move(Path.Combine(TmpFileDir, soundtrack.ServerFilename), Path.Combine(WorkFileDir, soundtrack.ServerFilename));
+                    }
+                    
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -122,8 +196,8 @@ namespace Sveyko.B1RADIO.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GenreId"] = new SelectList(_context.Genre, "Id", "Name", soundtrack.GenreId);
-            ViewData["SingerId"] = new SelectList(_context.Singer, "Id", "Name", soundtrack.SingerId);
+            ViewData["GenreId"] = new SelectList(_context.Genre.OrderBy(e => e.Name), "Id", "Name", soundtrack.GenreId);
+            ViewData["SingerId"] = new SelectList(_context.Singer.OrderBy(e => e.Name), "Id", "Name", soundtrack.SingerId);
             return View(soundtrack);
         }
 
@@ -177,20 +251,53 @@ namespace Sveyko.B1RADIO.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddSinger(Singer model)
+        public async Task<IActionResult> AddSinger(Singer model)
         {
+            Singer model_out = model;
             if (ModelState.IsValid)
             {
-                _context.Add(model);
-                _context.SaveChanges();
+                Singer existingSinger = _context.Singer.FirstOrDefault(e => e.Name == model_out.Name);
+                if (existingSinger == null)
+                {
+                    _context.Singer.Add(model_out);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    model_out = existingSinger;
+                }
             }
-            return PartialView("_AddSingerPartial", model);
+           // return PartialView("_AddSingerPartial", model_out);
+            return Ok(model_out);
+        }
+
+        [HttpGet]
+        public JsonResult GetSingerList()
+        {
+            return Json(new SelectList(_context.Singer.OrderBy(e => e.Name), "Id", "Name"));
         }
 
         [HttpPost]
-        public JsonResult GetSingerList()
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
-            return Json(new SelectList(_context.Singer, "Id", "Name"));
+            if (file == null || file.Length == 0)
+                return Content("file not selected");
+
+            Directory.CreateDirectory(TmpFileDir);
+            string serverFileName = string.Format(@"{0}" + Path.GetExtension(file.FileName), Guid.NewGuid());
+            var path = Path.Combine(TmpFileDir, serverFileName);
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok(serverFileName);
+        }
+
+        public static void PlaySound(string file)
+        {
+            Process.Start(@"powershell", $@"-c (New-Object Media.SoundPlayer '{file}').PlaySync();");
         }
     }
 }
