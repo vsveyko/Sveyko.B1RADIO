@@ -20,14 +20,14 @@
                 <label asp-for="SingerId" class="control-label"></label>
                 <div class="input-group">
                     @*<select  id="dropDownSingerId" asp-for="SingerId" class="form-control" asp-items="ViewBag.SingerId"></select>*@
-                    <select id="SingerId" asp-for="SingerId" name="SingerId" class="form-control"></select>
-                    <div id="modal-placeholder"></div>
+                    <select id="SingerId" asp-for="SingerId" name="SingerId" class="form-control"></select>                    
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" data-toggle="ajax-modal" data-target="#add-singer">
                             New
                         </button>
                     </span>
                 </div>
+                <span asp-validation-for="SingerId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -57,6 +57,8 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<div id="modal-placeholder"></div>
 
 @section Scripts {
 
