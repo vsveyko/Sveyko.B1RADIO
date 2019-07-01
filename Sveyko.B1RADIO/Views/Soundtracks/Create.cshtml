@@ -22,7 +22,7 @@
                     @*<select  id="dropDownSingerId" asp-for="SingerId" class="form-control" asp-items="ViewBag.SingerId"></select>*@
                     <select id="SingerId" asp-for="SingerId" name="SingerId" class="form-control"></select>                    
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" data-toggle="ajax-modal" data-target="#add-singer">
+                        <button type="button" class="btn btn-success" data-toggle="ajax-modal" data-target="#add-singer">
                             New
                         </button>
                     </span>
@@ -31,7 +31,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+                <input id="TitleID" asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -48,15 +48,16 @@
                 <span asp-validation-for="ClientFilename" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="button" class="btn btn-default" value="To List" onclick="location.href='@Url.Action("Index", "Soundtracks")'" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
+@*<div>
     <a asp-action="Index">Back to List</a>
-</div>
+</div>*@
 
 <div id="modal-placeholder"></div>
 

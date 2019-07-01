@@ -83,7 +83,7 @@ namespace Sveyko.B1RADIO.Controllers
                     break;
             }
 
-            int pageSize = 10;
+            int pageSize = 8;
             var soundtrackList = await PaginatedList<Soundtrack>.CreateAsync(soundtracks.AsNoTracking(), pageIndex ?? 1, pageSize);
             //var soundtrackList = await soundtracks.AsNoTracking().ToListAsync();
             return View(soundtrackList);
@@ -228,6 +228,13 @@ namespace Sveyko.B1RADIO.Controllers
         {
             var soundtrack = await _context.Soundtrack.FindAsync(id);
             _context.Soundtrack.Remove(soundtrack);
+
+            var fileName = Path.Combine(WorkFileDir, soundtrack.ServerFilename);
+            if (System.IO.File.Exists(fileName))
+            {
+                System.IO.File.Delete(fileName);
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
