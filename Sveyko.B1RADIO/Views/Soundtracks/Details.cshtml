@@ -9,58 +9,92 @@
 <div>
     <h4>Soundtrack</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ClientFilename)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ClientFilename)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd>
+    @*<dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Title)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Title)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ClientFilename)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ClientFilename)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Genre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Genre.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Singer)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Singer.Name)
+            </dd>
+        </dl>*@
+    <row>
+        <div class="col-12 col-sm-12 col-xs-12">
+            <strong>
+                @Html.DisplayNameFor(model => model.Genre)
+            </strong><br>
+        </div>
+        <div class="col-12 col-sm-12 col-xs-12">
             @Html.DisplayFor(model => model.Genre.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Singer)
-        </dt>
-        <dd>
+        </div>
+    </row>
+    <p>&nbsp;</p>
+    <row>
+        <div class="col-12 col-sm-12 col-xs-12">
+            <strong>
+                @Html.DisplayNameFor(model => model.Singer)
+            </strong><br>
+        </div>
+        <div class="col-12 col-sm-12 col-xs-12">
             @Html.DisplayFor(model => model.Singer.Name)
-        </dd>
-    </dl>
+        </div>
+    </row>
+    <p>&nbsp;</p>
+    <row>
+        <div class="col-12 col-sm-12 col-xs-12">
+            <strong>
+                @Html.DisplayNameFor(model => model.Title)
+            </strong><br>
+        </div>
+        <div class="col-12 col-sm-12 col-xs-12">
+            @Html.DisplayFor(model => model.Title)
+        </div>
+    </row>
+    <p>&nbsp;</p>
     @{
         string fileName = "/soundtracks/" + @Model.ServerFilename;
     }
-    @if (!string.IsNullOrEmpty(fileName))
-    {
-        <audio controls>
-            <source src="@fileName" type="audio/mpeg">
-        </audio>
+    <row>
+        <div class="col-12 col-sm-12 col-xs-12">
+            @if (!string.IsNullOrEmpty(fileName))
+            {
+                <audio controls>
+                    <source src="@fileName" type="audio/mpeg">
+                </audio>
 
-        <a href="#" id="playAudio">Play Audio</a>
-        <a href="#" id="pauseAudio">Pause Audio</a>
-        <audio id="audio">
-            <source src="@fileName" type="audio/mpeg">
-            Your browser doesn't support the audio element.
-        </audio>
-        <button class="btn btn-default" id="btnPlayID">
-            <span class="glyphicon glyphicon-log-in">
-            </span> Test
-        </button>
-
-    }
-
+                @*<a href="#" id="playAudio">Play Audio</a>
+                    <a href="#" id="pauseAudio">Pause Audio</a>*@
+                @*<audio id="audio">
+                        <source src="@fileName" type="audio/mpeg">
+                        Your browser doesn't support the audio element.
+                    </audio>*@
+            }
+        </div>
+    </row>
 </div>
+<p>&nbsp;</p>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @*<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>*@
+    <input type="button" class="btn btn-primary" value="Edit" onclick="location.href='@Url.Action("Edit", "Soundtracks",new { id = @Model.Id })'" />
+    <input type="button" class="btn btn-default" value="To List" onclick="location.href='@Url.Action("Index", "Soundtracks")'" />
 </div>
 
 <script>
@@ -74,13 +108,13 @@
     function pauseAudio() {
         document.getElementById("audio").pause();
     }
-    var el2 = document.getElementById("btnPlayID");
-    el2.onclick = test;
-    function test() {
-        //playAudio();
-        el2.find('span:first').toggleClass('glyphicon-log-in glyphicon-log-out');
-       // var color = clicked ? 'red' : 'blue';
-        //$(this).css('background-color', color);
-        clicked = !clicked;
-    };
+    //var el2 = document.getElementById("btnPlayID");
+    //el2.onclick = test;
+    //function test() {
+    //    //playAudio();
+    //    el2.find('span:first').toggleClass('glyphicon-log-in glyphicon-log-out');
+    //   // var color = clicked ? 'red' : 'blue';
+    //    //$(this).css('background-color', color);
+    //    clicked = !clicked;
+    //};
 </script>

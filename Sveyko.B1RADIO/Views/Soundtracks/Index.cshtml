@@ -5,7 +5,7 @@
         ViewData["Title"] = "Soundtracks";
     }
 
-    <h2>R1.RADIO: Soundtrack list</h2>
+    <h2>Soundtrack list</h2>
     <div class="row top-buffer">
         <div class="col-2 col-sm-2 col-xs-12">
             @*<p>
@@ -39,96 +39,118 @@
         </div>
         <div class="col-1 col-sm-1 col-xs-12">
             <button id="resetSearch" class="btn btn-default" type="button">
-                Show all
+                Reset
             </button>
         </div>
     </div>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    <span id="headerGenre">
-                        @Html.DisplayNameFor(model => model[0].Genre)
-                    </span>
-                </th>
-                <th>
-                    <span id="headerSinger">
-                        @Html.DisplayNameFor(model => model[0].Singer)
-                    </span>
-                </th>
-                <th>
-                    <span id="headerTitle">
-                        @Html.DisplayNameFor(model => model[0].Title)
-                    </span>
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model[0].ServerFilename)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model[0].ClientFilename)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <p>&nbsp;</p>
+        <table class="table">
+            <thead>
                 <tr>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Genre.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Singer.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Title)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ServerFilename)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ClientFilename)
-                    </td>
-                    <td>
-                        <a href="#" id="play @item.Id" sound="@item.ServerFilename" class="play-Audio">Play</a> |
-                        <a href="#" id="pause @item.Id" sound="@item.ServerFilename" class="pause-Audio">Stop</a>
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
+                    <th>
+                        <span id="headerGenre">
+                            @Html.DisplayNameFor(model => model[0].Genre)
+                        </span>
+                    </th>
+                    <th>
+                        <span id="headerSinger">
+                            @Html.DisplayNameFor(model => model[0].Singer)
+                        </span>
+                    </th>
+                    <th>
+                        <span id="headerTitle">
+                            @Html.DisplayNameFor(model => model[0].Title)
+                        </span>
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model[0].ServerFilename)
+                    </th>*@
+                    @*<th>
+                        @Html.DisplayNameFor(model => model[0].ClientFilename)
+                    </th>*@
+                    <th>Play/Stop</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.ClientFilename)
+                        </td>*@
 
-    <audio id="audio">
-        <source src="" type="audio/mpeg">
-    </audio>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Genre.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Singer.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.ServerFilename)
+                        </td>*@
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="play @item.Id" sound="@item.ServerFilename" class="btn btn-sm btn-success play-Audio">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                </button>
+                                <button type="button" id="pause @item.Id" sound="@item.ServerFilename" class="btn btn-sm btn-danger pause-Audio">
+                                    <span class="glyphicon glyphicon-stop"></span>
+                                </button>
+                            </div>
+                            @*<a href="#" id="play @item.Id" sound="@item.ServerFilename" class="play-Audio">Play</a> |
+                            <a href="#" id="pause @item.Id" sound="@item.ServerFilename" class="pause-Audio">Stop</a>*@
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Soundtracks", new { id = @item.Id })'" data-toggle="tooltip" title="Edit">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-info" onclick="location.href='@Url.Action("Details", "Soundtracks", new { id = @item.Id })'"  data-toggle="tooltip" title="Details">
+                                    <span class="glyphicon glyphicon-info-sign"></span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="location.href='@Url.Action("Delete", "Soundtracks", new { id = @item.Id })'"  data-toggle="tooltip" title="Delete">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </div>
+                            @*<input type="button" class="btn btn-success" value="Add" onclick="location.href='@Url.Action("Create", "Soundtracks")'" />
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    @{
-        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-    }
+        <audio id="audio">
+            <source src="" type="audio/mpeg">
+        </audio>
 
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSortOrder"]"
-       asp-route-pageIndex="@(Model.PageIndex - 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled">
-        Previous
-    </a>
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSortOrder"]"
-       asp-route-pageIndex="@(Model.PageIndex + 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @nextDisabled">
-        Next
-    </a>
-</div>
+        @{
+            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+        }
+
+        <a asp-action="Index"
+           asp-route-sortOrder="@ViewData["CurrentSortOrder"]"
+           asp-route-pageIndex="@(Model.PageIndex - 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @prevDisabled">
+            Previous
+        </a>
+        <a asp-action="Index"
+           asp-route-sortOrder="@ViewData["CurrentSortOrder"]"
+           asp-route-pageIndex="@(Model.PageIndex + 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @nextDisabled">
+            Next
+        </a>
+    </div>
         @section Scripts {
 
             <script>
@@ -155,9 +177,9 @@
                 elResetSearch.onclick = resetSearchClause;
 
                 function setSortOrderFor(headerKey) {
-                    alert(headerKey + " " + soundtrackSortOrder);
+                    //alert(headerKey + " " + soundtrackSortOrder);
                     soundtrackSortOrder = soundtrackSortOrder === headerKey + "_asc" ? headerKey + "_desc" : headerKey + "_asc";
-                    alert("after: " + soundtrackSortOrder);
+                   // alert("after: " + soundtrackSortOrder);
                     reloadDataSet(soundtrackSortOrder, soundtrackSearchTypeID, soundtrackSearchString);
                 }
 
@@ -201,12 +223,16 @@
                 }
 
                 $(".play-Audio").on('click', function (event) {
-                    document.getElementById("audio").src = soundtrackFolder + $(this).attr("sound");
+                    if (document.getElementById("audio").src !== soundtrackFolder + $(this).attr("sound")) {
+                        document.getElementById("audio").src = soundtrackFolder + $(this).attr("sound");
+                    }   
                     document.getElementById("audio").play();
                 });
 
                 $(".pause-Audio").on('click', function (event) {
-                    document.getElementById("audio").src = soundtrackFolder + $(this).attr("sound");
+                    if (document.getElementById("audio").src !== soundtrackFolder + $(this).attr("sound")) {
+                        document.getElementById("audio").src = soundtrackFolder + $(this).attr("sound");
+                    } 
                     document.getElementById("audio").pause();
                 });
 

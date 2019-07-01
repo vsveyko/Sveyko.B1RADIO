@@ -10,6 +10,8 @@ $(function () {
 
         var placeholderElement = $('#modal-placeholder');
 
+        //$('[data-toggle="tooltip"]').tooltip(); 
+
         $('button[data-toggle="ajax-modal"]').click(function (event) {
             var url = '/Soundtracks/AddSinger';
             $.get(url).done(function (data) {
@@ -48,6 +50,9 @@ $(function () {
 
             if (input.length) {
                 input.val(localFileName);
+                if ($("#TitleID")[0].value === "") {
+                    $("#TitleID")[0].value = localFileName.split('.').slice(0, -1).join('.');
+                }
             }
 
             var formData = new FormData();

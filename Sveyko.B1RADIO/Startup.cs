@@ -36,7 +36,7 @@ namespace Sveyko.B1RADIO
 
 
             //\SQLEXPRESS
-            var connection = @"Server=localhost;Database=B1RADIO;Trusted_Connection=True;ConnectRetryCount=0";
+            var connection = @"Server=localhost\SQLEXPRESS;Database=B1RADIO;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<B1RADIOContext>(options => options.UseSqlServer(connection));
 
             var fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
