@@ -4,30 +4,35 @@
 // Write your JavaScript code.
 
 $(function () {
-    var placeholderElement = $('#modal-placeholder');
 
-    $('button[data-toggle="ajax-modal"]').click(function (event) {
-        var url = '/Soundtracks/AddSinger';
-        $.get(url).done(function (data) {
-            placeholderElement.html(data);
-            placeholderElement.find('.modal').modal('show');
-        });
-    });
-
-    placeholderElement.on('click', '[data-save="modal"]', function (event) {
-        event.preventDefault();
-
-        var actionUrl = '/Soundtracks/AddSinger';
-        var dataToSend = { "Name": $("#singerName").get(0).value };//.serialize();
-        
-        $.post(actionUrl, dataToSend).done(function (data) {
-            placeholderElement.find('.modal').modal('hide');
-            var singerNewName = data.name;//find('#singerName').get(0).value;
-            RefreshSingerList(singerNewName);
-        });
-    });
 
     $(document).ready(function () {
+
+        var placeholderElement = $('#modal-placeholder');
+
+        $('button[data-toggle="ajax-modal"]').click(function (event) {
+            var url = '/Soundtracks/AddSinger';
+            $.get(url).done(function (data) {
+                if (placeholderElement) {
+                    placeholderElement.html(data);
+                    placeholderElement.find('.modal').modal('show');
+                    //placeholderElement.getElementById("singerName").focus();
+                }
+            });
+        });
+
+        placeholderElement.on('click', '[data-save="modal"]', function (event) {
+            event.preventDefault();
+
+            var actionUrl = '/Soundtracks/AddSinger';
+            var dataToSend = { "Name": $("#singerName").get(0).value };//.serialize();
+
+            $.post(actionUrl, dataToSend).done(function (data) {
+                placeholderElement.find('.modal').modal('hide');
+                var singerNewName = data.name;//find('#singerName').get(0).value;
+                RefreshSingerList(singerNewName);
+            });
+        });
 
         $(document).on('change', ':file', function () {
             var input = $(this),
