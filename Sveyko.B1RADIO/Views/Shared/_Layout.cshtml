@@ -17,34 +17,32 @@
     </environment>
 </head>
 <body>
-    
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="bg"></div>
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 @*<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>*@
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>*@
                 <a asp-area="" asp-controller="Soundtracks" asp-action="Index" class="navbar-brand brand-name">
 
                     <span><img src="/images/one.png" width="30" height="30" alt=""></span>
                     <span>B1.RADIO</span>
                 </a>
                 @*<a class="brand-logo pull-left" href="#"><img src="/images/one.png"></a>
-                <span class="brand-name pull-left">COMPANY NAME</span>
-            </div>*@
+                        <span class="brand-name pull-left">COMPANY NAME</span>
+                    </div>*@
                 @*<div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Soundtracks" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                </ul>
-            </div>*@
+                        <ul class="nav navbar-nav">
+                            <li><a asp-area="" asp-controller="Soundtracks" asp-action="Index">Home</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                        </ul>
+                    </div>*@
             </div>
-        </div>   
+        </div>
     </nav>
 
     <partial name="_CookieConsentPartial" />
@@ -55,11 +53,16 @@
 
     </div>
 
-    <div class="navbar bottom">
+    <div class="footer navbar-fixed-bottom">
         <div class="container">
-            <p><small>&copy; 2019 - B1.RADIO All rights reserved.</small></p>
+            <p class="brand-name"><small>&copy; 2019 - B1.RADIO All rights reserved.</small></p>
         </div>
     </div>
+    @*<footer class="footer">
+        <div class="container">
+            <p class="text-muted">Place sticky footer content here.</p>
+        </div>
+    </footer>*@
 
     <div class="modal fade" id="modalFileUpload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">

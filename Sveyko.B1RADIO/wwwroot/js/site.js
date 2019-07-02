@@ -32,7 +32,7 @@ $(function () {
             $.post(actionUrl, dataToSend).done(function (data) {
                 placeholderElement.find('.modal').modal('hide');
                 var singerNewName = data.name;//find('#singerName').get(0).value;
-                RefreshSingerList(singerNewName);
+                RefreshSingerList(singerNewName, 0);
             });
         });
 
@@ -85,7 +85,7 @@ $(function () {
 
 });
 
-function RefreshSingerList(selName) {
+function RefreshSingerList(selName, selId) {
     actUrl = "/Soundtracks/GetSingerList";
 
     $.ajax({
@@ -100,7 +100,7 @@ function RefreshSingerList(selName) {
                 $("#SingerId").append('<option value="' + item.value + '">' +
                     item.text + '</option>');
 
-                if ((selName) && (item.text === selName)) {
+                if ((item.text === selName) || (parseInt(item.value) === selId)) {                    
                     $("#SingerId").get(0).options[i].selected = true;
                 }
             });

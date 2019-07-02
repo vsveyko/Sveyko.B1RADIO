@@ -170,9 +170,9 @@ namespace Sveyko.B1RADIO.Controllers
             if (ModelState.IsValid)
             {
                 Soundtrack existingSoundtrack = _context.Soundtrack.FirstOrDefault(e => e.Id == soundtrack.Id);
+                _context.Entry<Soundtrack>(existingSoundtrack).State = EntityState.Detached;
                 try
-                {
-                    _context.Entry<Soundtrack>(existingSoundtrack).State = EntityState.Detached;
+                {                    
                     _context.Update(soundtrack);
                     if (System.IO.File.Exists(Path.Combine(TmpFileDir, soundtrack.ServerFilename)))
                     {
